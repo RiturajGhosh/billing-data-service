@@ -1,0 +1,18 @@
+application:
+  title: Billing-data-Service
+  version: 1.0.0
+server:
+  port: 8081
+spring:
+  datasource:
+    password: root
+    url: jdbc:mysql://localhost:3306/customer?allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+  hikari:
+    connectionTimeout: 300000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
