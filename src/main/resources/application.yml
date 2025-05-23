@@ -5,14 +5,17 @@ server:
   port: 8081
 spring:
   datasource:
-    password: root
-    url: jdbc:mysql://localhost:3306/customer?allowPublicKeyRetrieval=true&useSSL=false
-    username: root
-  hikari:
-    connectionTimeout: 300000
+    password: xivcuncedWenjugba!@31
+    url: jdbc:sqlserver://riturajghoshdbserver.database.windows.net:1433;database=uploaddata;;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;
+    username: rituraj@riturajghoshdbserver
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    hikari:
+      maximum-pool-size: 30
+      minimum-idle: 5
+      connection-timeout: 300000
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.SQLServerDialect

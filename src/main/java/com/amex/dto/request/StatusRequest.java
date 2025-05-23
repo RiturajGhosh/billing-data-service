@@ -1,4 +1,4 @@
-package com.amex.controller;
+package com.amex.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
