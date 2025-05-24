@@ -3,6 +3,7 @@ package com.amex.service.implementations;
 import com.amex.dto.entity.Employee;
 import com.amex.service.CustomThreadFactory;
 import com.amex.service.UploadService;
+import com.amex.util.MdcTaskDecorator;
 import com.monitorjbl.xlsx.StreamingReader;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -32,8 +33,8 @@ public class UploadServiceImpl implements UploadService {
     public UploadServiceImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.executorService = new ThreadPoolExecutor(
-                Runtime.getRuntime().availableProcessors()+30, // corePoolSize
-                Runtime.getRuntime().availableProcessors()+35,   // maximumPoolSize
+                Runtime.getRuntime().availableProcessors() * 2, // corePoolSize
+                Runtime.getRuntime().availableProcessors() + 10,   // maximumPoolSize
                 60, TimeUnit.SECONDS,     // idle timeout
                 new LinkedBlockingQueue<>(200),  // task queue size
                 new CustomThreadFactory("db-batch-")
@@ -43,7 +44,7 @@ public class UploadServiceImpl implements UploadService {
 
     @Override
     public void upload(MultipartFile file) throws IOException {
-        List < Future < ?>>futures = new ArrayList<>();
+        List<Future<?>> futures = new ArrayList<>();
         List<Employee> batch = new ArrayList<>();
         try (InputStream iStream = file.getInputStream()) {
             Workbook workbook = StreamingReader.builder()
@@ -64,17 +65,17 @@ public class UploadServiceImpl implements UploadService {
                 batch.add(emp);
 
                 if (batch.size() == BATCH_SIZE) {
-                    var prev =startTime;
+                    var prev = startTime;
                     startTime = System.currentTimeMillis();
                     log.info("Time taken for batch read: {}", startTime - prev);
                     List<Employee> toInsert = new ArrayList<>(batch);
                     batch.clear();
-                    futures.add(executorService.submit(() -> batchInsert(toInsert)));
+                    futures.add(executorService.submit(MdcTaskDecorator.decorate(() -> batchInsert(toInsert))));
                 }
             }
             if (!batch.isEmpty()) {
                 List<Employee> toInsert = new ArrayList<>(batch);
-                futures.add(executorService.submit(() -> batchInsert(toInsert)));
+                futures.add(executorService.submit(MdcTaskDecorator.decorate(() -> batchInsert(toInsert))));
             }
         }
 
