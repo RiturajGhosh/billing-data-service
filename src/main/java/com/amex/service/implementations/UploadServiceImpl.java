@@ -32,8 +32,8 @@ public class UploadServiceImpl implements UploadService {
     public UploadServiceImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.executorService = new ThreadPoolExecutor(
-                Runtime.getRuntime().availableProcessors()+15, // corePoolSize
-                Runtime.getRuntime().availableProcessors()+30,   // maximumPoolSize
+                Runtime.getRuntime().availableProcessors()+30, // corePoolSize
+                Runtime.getRuntime().availableProcessors()+35,   // maximumPoolSize
                 60, TimeUnit.SECONDS,     // idle timeout
                 new LinkedBlockingQueue<>(200),  // task queue size
                 new CustomThreadFactory("db-batch-")
